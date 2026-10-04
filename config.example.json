@@ -1,0 +1,32 @@
+{
+  "host": "",
+  "port": 8080,
+  "pollIntervalSeconds": 10,
+  "requestTimeoutMs": 4000,
+  "limits": {
+    "frequency": [
+      400,
+      800
+    ],
+    "coreVoltage": [
+      1000,
+      1300
+    ]
+  },
+  "nicehash": {
+    "apiKey": "",
+    "apiSecret": "",
+    "organizationId": "",
+    "currency": "EUR",
+    "pollIntervalSeconds": 60
+  },
+  "miners": [
+    {
+      "name": "bitaxe_01",
+      "ip": "192.168.1.100"
+    }
+  ],
+  "auth": {
+    "passwordHash": ""
+  }
+}

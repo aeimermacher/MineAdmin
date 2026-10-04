@@ -1,0 +1,14 @@
+{
+  "name": "mineadmin",
+  "version": "1.0.0",
+  "description": "Central dashboard to monitor and control Bitaxe miners running AxeOS",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "set-password": "node scripts/set-password.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

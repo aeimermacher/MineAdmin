@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MineAdmin - Bitaxe Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="locked">
+  <header>
+    <h1>MineAdmin</h1>
+    <span id="updated" class="muted"></span>
+    <span class="spacer"></span>
+    <button id="login-btn" class="locked-only">Log in to make changes</button>
+    <button id="logout-btn" class="auth-only">Log out</button>
+  </header>
+
+  <section class="cards">
+    <div class="card"><div class="label">Online</div><div class="value" id="t-online">-</div></div>
+    <div class="card"><div class="label">Total hashrate</div><div class="value" id="t-hashrate">-</div></div>
+    <div class="card"><div class="label">Total power</div><div class="value" id="t-power">-</div></div>
+    <div class="card"><div class="label">Efficiency</div><div class="value" id="t-eff">-</div></div>
+    <div class="card"><div class="label">Shares (acc / rej)</div><div class="value" id="t-shares">-</div></div>
+  </section>
+
+  <section class="charts">
+    <div class="panel">
+      <div class="panel-title">Total hashrate (last 6h)</div>
+      <canvas id="chart-hashrate" height="160"></canvas>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Total power (last 6h)</div>
+      <canvas id="chart-power" height="160"></canvas>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Efficiency (last 6h)</div>
+      <canvas id="chart-eff" height="160"></canvas>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-title">NiceHash earnings <span id="nh-updated"></span></div>
+    <div id="nh-body" class="muted">Loading...</div>
+  </section>
+
+  <section class="panel">
+    <div class="toolbar">
+      <button id="add-miner" class="primary auth-only">Add miner</button>
+      <span id="sel-count" class="muted">0 selected</span>
+      <button id="bulk-settings" class="auth-only" disabled>Apply settings to selected</button>
+      <button id="bulk-restart" class="danger auth-only" disabled>Restart selected</button>
+      <button id="refresh">Refresh now</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="select-all" title="Select all"></th>
+            <th>Status</th>
+            <th>Miner</th>
+            <th>Hashrate</th>
+            <th>ASIC temp</th>
+            <th>VR temp</th>
+            <th>Power</th>
+            <th>J/TH</th>
+            <th>Freq</th>
+            <th>Core mV (set/act)</th>
+            <th>Fan</th>
+            <th>Shares A/R</th>
+            <th>Best diff</th>
+            <th>Uptime</th>
+            <th>Pool</th>
+            <th>FW</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="miners"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <dialog id="settings-dialog">
+    <form id="settings-form" method="dialog">
+      <h2 id="settings-title">Settings</h2>
+      <p class="muted" id="settings-hint">Leave a field empty to keep the current value.</p>
+      <div class="grid">
+        <label class="single-only">Hostname <input name="hostname" maxlength="32"></label>
+        <label>Frequency (MHz) <input name="frequency" type="number" step="1" list="freq-list"></label>
+        <label>Core voltage (mV) <input name="coreVoltage" type="number" step="1" list="volt-list"></label>
+        <label>Fan mode
+          <select name="autofanspeed">
+            <option value="">(unchanged)</option>
+            <option value="1">Auto</option>
+            <option value="0">Manual</option>
+          </select>
+        </label>
+        <label>Manual fan speed (%) <input name="fanspeed" type="number" min="0" max="100"></label>
+        <label class="wide">Stratum URL <input name="stratumURL" maxlength="128" placeholder="e.g. public-pool.io"></label>
+        <label>Stratum port <input name="stratumPort" type="number" min="1" max="65535"></label>
+        <label>Stratum user <input name="stratumUser" maxlength="128">
+          <span class="bulk-only">Each miner's hostname is appended, e.g. <em>address.bitaxe_01</em></span>
+        </label>
+        <label>Stratum password <input name="stratumPassword" type="password" maxlength="64" autocomplete="off"></label>
+      </div>
+      <label class="check"><input type="checkbox" name="restart" checked> Restart after applying</label>
+      <p class="muted" id="limits-hint"></p>
+      <div class="actions">
+        <button type="button" id="settings-cancel">Cancel</button>
+        <button type="submit" class="primary">Apply</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="login-dialog">
+    <form id="login-form" method="dialog">
+      <h2>Log in</h2>
+      <p class="muted" id="login-hint"></p>
+      <div class="grid">
+        <label class="wide">Password <input name="password" type="password" required autocomplete="current-password" autofocus></label>
+      </div>
+      <div class="actions">
+        <button type="button" id="login-cancel">Cancel</button>
+        <button type="submit" class="primary">Log in</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="add-dialog">
+    <form id="add-form" method="dialog">
+      <h2>Add miner</h2>
+      <p class="muted">The miner is contacted right away; if it's offline it is still added.</p>
+      <div class="grid">
+        <label>IP address or hostname <input name="ip" required maxlength="253" placeholder="192.168.1.101"></label>
+        <label>Name (optional) <input name="name" maxlength="32" placeholder="Defaults to AxeOS hostname"></label>
+      </div>
+      <div class="actions">
+        <button type="button" id="add-cancel">Cancel</button>
+        <button type="submit" class="primary" id="add-submit">Add</button>
+      </div>
+    </form>
+  </dialog>
+
+  <datalist id="freq-list">
+    <option value="400"><option value="490"><option value="525"><option value="550"><option value="575"><option value="600"><option value="625">
+  </datalist>
+  <datalist id="volt-list">
+    <option value="1000"><option value="1060"><option value="1100"><option value="1150"><option value="1200"><option value="1250">
+  </datalist>
+
+  <div id="toasts"></div>
+  <script src="app.js"></script>
+</body>
+</html>
