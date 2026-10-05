@@ -60,7 +60,7 @@ export function createNicehash(cfg = {}) {
       await syncTime();
       const [rigs, payouts, rate] = await Promise.all([
         request('/main/api/v2/mining/rigs2'),
-        request('/main/api/v2/mining/rigs/payouts', 'page=0&size=10'),
+        request('/main/api/v2/mining/rigs/payouts', 'page=0&size=100'),
         fiatRate().catch(() => null),
       ]);
       state.data = {

@@ -220,11 +220,19 @@ function renderNicehash(nh) {
       <td class="num">${esc(btc(w.unpaid))}</td>
       <td>${esc(minerFor(w.name)?.name ?? '-')}</td>
     </tr>`).join('');
-  const payoutRows = d.payouts.map((p) => `<tr>
+  const payoutRows = d.payouts.slice(0, 10).map((p) => `<tr>
       <td>${esc(date(p.time))}</td>
       <td class="num">${esc(btc(p.amount))}<br><span class="muted">${esc(fiat(p.amount))}</span></td>
       <td class="num">${esc(btc(p.fee))}</td>
     </tr>`).join('');
+  const paidInDays = (days) => {
+    const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+    return d.payouts.reduce((total, payout) => (
+      new Date(payout.time).getTime() >= cutoff && payout.amount != null
+        ? total + payout.amount
+        : total
+    ), 0);
+  };
 
   body.className = '';
   body.innerHTML = `
@@ -233,6 +241,9 @@ function renderNicehash(nh) {
       ${card('Unpaid balance', btc(d.unpaid), fiat(d.unpaid))}
       ${card('Estimated per day', btc(d.profitabilityPerDay), fiat(d.profitabilityPerDay))}
       ${card('Estimated per 30 days', btc(d.profitabilityPerDay != null ? d.profitabilityPerDay * 30 : null), fiat(d.profitabilityPerDay != null ? d.profitabilityPerDay * 30 : null))}
+      ${card('Paid last 7 days', btc(paidInDays(7)), fiat(paidInDays(7)))}
+      ${card('Paid last 30 days', btc(paidInDays(30)), fiat(paidInDays(30)))}
+      ${card('Paid last 90 days', btc(paidInDays(90)), fiat(paidInDays(90)))}
       ${card('Next payout', date(d.nextPayout), d.lastPayout ? `Last: ${date(d.lastPayout)}` : '')}
     </div>
     ${missing.length ? `<p class="warn">Not seen on NiceHash: ${esc(missing.join(', '))}</p>` : ''}

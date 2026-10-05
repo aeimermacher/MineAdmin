@@ -6,7 +6,7 @@ MineAdmin is a self-hosted dashboard for monitoring and managing Bitaxe miners r
 
 - Live miner status, hashrate, power, efficiency, temperatures, fan speed, shares, uptime, pool, and firmware information.
 - Six-hour hashrate, power, and efficiency charts.
-- Optional NiceHash earnings, worker, and payout information.
+- Optional NiceHash earnings estimates, rolling 7/30/90-day paid totals, worker, and payout information.
 - Add or remove miners, identify a miner, restart it, or apply settings to one or several miners.
 - Password-protected changes, with monitoring available without logging in.
 
